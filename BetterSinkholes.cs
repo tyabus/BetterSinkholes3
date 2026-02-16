@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using LabApi.Features;
+using LabApi.Features.Console;
 using LabApi.Loader;
 using LabApi.Loader.Features.Plugins;
 using System;
@@ -34,6 +35,9 @@ public class BetterSinkholes : Plugin
         Instance = this;
         if (Config.IsEnabled)
         {
+            if (GameCore.ConfigFile.ServerConfig.GetInt("sinkhole_spawn_chance") <= 0)
+                Logger.Warn("sinkhole_spawn_chance is not above 0, consider changing it in config_gameplay.txt");
+
             SinkholeEventsHandler.RegisterEvents();
             _harmony.PatchAll();
         }
