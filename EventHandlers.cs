@@ -1,5 +1,7 @@
 ﻿using CustomPlayerEffects;
 using Hazards;
+using LabApi.Events.Arguments.PlayerEvents;
+using LabApi.Events.Handlers;
 using LabApi.Features.Wrappers;
 using PlayerRoles;
 using PlayerRoles.FirstPersonControl;
@@ -14,11 +16,13 @@ public class SinkholeEventsHandler
 
     public static void UnregisterEvents()
     {
+        PlayerEvents.StayingInHazard -= OnStayingAtSinkhole;
         CharacterClassManager.OnRoundStarted -= OnRoundStarted;
     }
 
     public static void RegisterEvents()
     {
+        PlayerEvents.StayingInHazard += OnStayingAtSinkhole;
         CharacterClassManager.OnRoundStarted += OnRoundStarted;
     }
 
@@ -31,20 +35,31 @@ public class SinkholeEventsHandler
         }
     }
 
-    public static void OnStayingAtSinkhole(ReferenceHub player, SinkholeEnvironmentalHazard Sinkhole) 
+    public static void OnStayingAtSinkhole(PlayersStayingInHazardEventArgs ev)
     {
-        if (player.playerEffectsController.GetEffect<PocketCorroding>().IsEnabled)
+        if(ev.Hazard is not SinkholeHazard)
             return;
 
-        if (player.IsSCP() || player.characterClassManager.GodMode)
-            return;
-
-        if ((double)Vector3.Distance(Sinkhole.SourcePosition, player.GetPosition()) <= (double)Sinkhole.MaxDistance * _config.TeleportDistance)
+        foreach (Player player in ev.AffectedPlayers)
         {
-            player.playerEffectsController.EnableEffect<PocketCorroding>();
+            ReferenceHub playerHub = player.ReferenceHub;
 
-            if (_translation.TeleportMessage is not null)
-                player.BroadcastMessage(_translation.TeleportMessage);
+            if (!playerHub)
+                continue;
+
+            if (playerHub.playerEffectsController.GetEffect<PocketCorroding>().IsEnabled)
+                continue;
+
+            if (playerHub.IsSCP() || playerHub.characterClassManager.GodMode)
+                continue;
+
+            if ((double)Vector3.Distance(ev.Hazard.SourcePosition, playerHub.GetPosition()) <= (double)ev.Hazard.MaxDistance * _config.TeleportDistance)
+            {
+                playerHub.playerEffectsController.EnableEffect<PocketCorroding>();
+
+                if (_translation.TeleportMessage is not null)
+                    playerHub.BroadcastMessage(_translation.TeleportMessage);
+            }
         }
     }
 }
