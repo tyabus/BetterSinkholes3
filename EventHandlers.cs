@@ -17,16 +17,16 @@ public class SinkholeEventsHandler
     public static void UnregisterEvents()
     {
         PlayerEvents.StayingInHazard -= OnStayingAtSinkhole;
-        CharacterClassManager.OnRoundStarted -= OnRoundStarted;
+        ServerEvents.WaitingForPlayers -= OnWaitingForPlayers;
     }
 
     public static void RegisterEvents()
     {
         PlayerEvents.StayingInHazard += OnStayingAtSinkhole;
-        CharacterClassManager.OnRoundStarted += OnRoundStarted;
+        ServerEvents.WaitingForPlayers += OnWaitingForPlayers;
     }
 
-    public static void OnRoundStarted()
+    public static void OnWaitingForPlayers()
     {
         foreach (SinkholeHazard sinkholeHazard in SinkholeHazard.List)
             sinkholeHazard.MaxDistance *= _config.SlowDistance;
