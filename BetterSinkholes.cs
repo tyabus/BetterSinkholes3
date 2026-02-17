@@ -10,7 +10,7 @@ public class BetterSinkholes : Plugin
 {
     public static BetterSinkholes Instance { get; private set; } = null!;
     public override string Name => "BetterSinkholes3";
-    public override string Description { get; } = "BetterSinkholes3";
+    public override string Description => "BetterSinkholes3";
     public override string Author => "tyabus"; // EXILED version author: Yamato, Original author: Blackruby
     public override Version Version { get; } = new Version(1, 0, 2);
     public Config Config { get; private set; } = null!;
