@@ -28,11 +28,8 @@ public class SinkholeEventsHandler
 
     public static void OnRoundStarted()
     {
-        foreach (Hazard hazard in Hazard.List)
-        {
-            if (hazard is SinkholeHazard sinkholeHazard)
-                sinkholeHazard.MaxDistance *= _config.SlowDistance;
-        }
+        foreach (SinkholeHazard sinkholeHazard in SinkholeHazard.List)
+            sinkholeHazard.MaxDistance *= _config.SlowDistance;
     }
 
     public static void OnStayingAtSinkhole(PlayersStayingInHazardEventArgs ev)
